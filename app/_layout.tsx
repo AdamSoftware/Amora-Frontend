@@ -13,5 +13,12 @@ export default function RootLayout() {
     }, 3000); // Show splash screen for 3 seconds
   }, []);
 
-  return <Stack />;
+  return <Stack 
+    screenOptions={{
+      headerShown: false,
+      headerStyle: { backgroundColor: '#FF6B6B' },
+      headerTintColor: '#fff',
+      headerTitleAlign: 'center',
+    }}
+  />;
 }
