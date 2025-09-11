@@ -4,8 +4,15 @@ import Svg, { Path } from "react-native-svg";
 import { useFonts, DancingScript_700Bold } from "@expo-google-fonts/dancing-script";
 import { Poppins_400Regular, Poppins_600SemiBold } from "@expo-google-fonts/poppins";
 import AppLoading from "expo-app-loading";
+import {UserLoginHelper,UserLogoutHelper,goToSignup} from "../app/helper/user.js";
+import {router} from "expo-router";
 
 export default function Index() {
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+
+
   let [fontsLoaded] = useFonts({
     DancingScript_700Bold,
     Poppins_400Regular,
@@ -34,12 +41,17 @@ export default function Index() {
 
         <View style={styles.form}>
           <Text style={styles.label}>Username</Text>
-          <TextInput placeholder="Enter your username" style={styles.input} />
+          <TextInput 
+            placeholder="Enter your username" 
+            style={styles.input} 
+            onChangeText={setUsername}
+          />
           <Text style={styles.label}>Password</Text>
           <TextInput
             placeholder="Enter your password"
             style={styles.input}
             secureTextEntry
+            onChangeText={setPassword}
           />
         </View>
       </View>
@@ -47,7 +59,7 @@ export default function Index() {
       <View style={styles.loginButtonContainer}>
         <TouchableOpacity
           style={styles.buttonLogin}
-          onPress={() => console.log("Login pressed")}
+          onPress={() => UserLoginHelper.login(username, password) }
         >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
@@ -63,7 +75,7 @@ export default function Index() {
 
         <TouchableOpacity
           style={styles.buttonSignup}
-          onPress={() => console.log("Sign Up pressed")}
+          onPress={() => goToSignup() }
         >
           <Text style={styles.buttonTextSignup}>Sign up here 💕</Text>
         </TouchableOpacity>

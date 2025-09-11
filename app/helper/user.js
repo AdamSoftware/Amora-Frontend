@@ -1,3 +1,7 @@
+import {router} from "expo-router";
+import * as Crypto from 'expo-crypto';
+
+
 export default class UserHelper {
   static email = "";
   static firstname = "";
@@ -7,19 +11,75 @@ export default class UserHelper {
   static token = "";
 }
 
-const UserLoginHelper = {
-  Username: "",
-  Password: "",
 
-  // then this will do all the api helper stuff to login the user
-  // and then will return true or false and set the UserHelper static variables
-  login: async function () {
-    // do the api call here
-    // if success set the UserHelper static variables
-    // if fail return false
-    return true;
+
+const UserLoginHelper = {
+  async login(username, password) {
+    try {
+      // API call would use username + password
+      console.log("Logging in with:", username, password);
+
+      const worked = true; // replace with API result
+
+      console.log("Login worked:", worked);
+      console.log("username:", username);
+      console.log("password:", password);
+
+      if (worked) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
+      return false;
+    }
   }
 };
+
+const hashPassword = async (password) => {
+  const hashed = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    password
+  );
+  return hashed;
+};
+
+const UserCreateAccountHelper = {
+  async createAccount(
+    firstname,
+    lastname,
+    email,
+    phonenumber,
+    password,
+    state,
+    city,
+    zip, 
+    address) {
+    try {
+
+      password = await hashPassword(password);
+      // API call would use the provided details
+      console.log("Hashed password:", password);
+
+      const worked = true; // replace with API result
+
+      console.log("Account creation worked:", worked);
+
+      if (worked) {
+        goToLogin(); 
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      console.error("Account creation failed:", err);
+      return false;
+    }
+  }
+};
+
+
 
 const UserLogoutHelper = {
   logout: function () {
@@ -36,4 +96,13 @@ const UserLogoutHelper = {
 };
 
 
-export { UserLoginHelper, UserLogoutHelper };
+const goToSignup = () => {
+  router.push('pages/CreateAccountPage');
+};
+
+const goToLogin = () => {
+  router.back('/index.tsx');
+};
+
+
+export { UserLoginHelper, UserLogoutHelper, goToSignup, goToLogin, UserCreateAccountHelper };
