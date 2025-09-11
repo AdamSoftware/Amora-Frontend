@@ -44,6 +44,15 @@ export default function Index() {
         </View>
       </View>
 
+      <View style={styles.loginButtonContainer}>
+        <TouchableOpacity
+          style={styles.buttonLogin}
+          onPress={() => console.log("Login pressed")}
+        >
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.bottomContainer}>
         <TouchableOpacity
           style={styles.buttonForgot}
@@ -160,6 +169,24 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 14,
     textAlign: "center",
+  },
+  loginButtonContainer: {
+    alignItems: "center",
+    bottom: 20,
+  },
+  buttonLogin: {
+    backgroundColor: "#FF6B6B",
+    paddingVertical: 15,
+    paddingHorizontal: 100,
+    bottom: 20,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: "#FFFFF",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
 });
 
