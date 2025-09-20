@@ -1,5 +1,8 @@
 import {router} from "expo-router";
 import * as Crypto from 'expo-crypto';
+import GenericAPIHelper from './GenericAPIHelper';
+import {LoginAPIHelper} from './LoginHelper.js';
+import { useRouter } from 'expo-router';
 
 
 export default class UserHelper {
@@ -17,15 +20,28 @@ const UserLoginHelper = {
   async login(username, password) {
     try {
       // API call would use username + password
-      console.log("Logging in with:", username, password);
+      var response = await LoginAPIHelper.LoginToken('/users/login', { email: username, password: password });
+      
 
-      const worked = true; // replace with API result
+      if (response && response.token) {
+        UserHelper.email = username;
+        UserHelper.token = response.token;
+        UserHelper.firstname = response.user.firstname;
+        UserHelper.lastname = response.user.lastname;
+        UserHelper.phonenumber = response.user.phonenumber;
+        UserHelper.id = response.user.id;
 
-      console.log("Login worked:", worked);
-      console.log("username:", username);
-      console.log("password:", password);
+        console.log("UserHelper after login:", UserHelper);
 
-      if (worked) {
+        router.push('/pages/Events');
+
+        console.log(UserHelper.email);
+        console.log(UserHelper.token);
+        console.log(UserHelper.firstname);
+        console.log(UserHelper.lastname);
+        console.log(UserHelper.phonenumber);
+        console.log(UserHelper.id);
+
         return true;
       } else {
         return false;
@@ -90,8 +106,7 @@ const UserLogoutHelper = {
     UserHelper.id = null;
     UserHelper.token = "";
 
-    // return you back to the login page / index page
-    window.location.href = "/";
+    router.replace("/");
   }
 };
 

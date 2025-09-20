@@ -1,24 +1,25 @@
 import { Stack } from "expo-router";
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   useEffect(() => {
-    // Simulate loading time to see splash screen
     setTimeout(() => {
       SplashScreen.hideAsync();
-    }, 3000); // Show splash screen for 3 seconds
+    }, 3000);
   }, []);
 
-  return <Stack 
-    screenOptions={{
-      headerShown: false,
-      headerStyle: { backgroundColor: '#FF6B6B' },
-      headerTintColor: '#fff',
-      headerTitleAlign: 'center',
-    }}
-  />;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      />
+    </GestureHandlerRootView>
+  );
 }
+

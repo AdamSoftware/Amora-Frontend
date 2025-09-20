@@ -10,6 +10,9 @@
       "image": "./assets/images/splash-icon.png",
       "backgroundColor": "#000000"
     },
+    "extra": {
+      "apiBaseUrl" : "http://127.0.0.1:8080"
+    },
     "scheme": "amora",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

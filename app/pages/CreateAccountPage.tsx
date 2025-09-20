@@ -93,7 +93,51 @@ export default function CreateAccountPage() {
     { label: "New York", value: "NY" },
     { label: "Texas", value: "TX" },
     { label: "Florida", value: "FL" },
-    /* ...rest of states... */
+    { label: "Illinois", value: "IL" },
+    { label: "Pennsylvania", value: "PA" },
+    { label: "Ohio", value: "OH" },
+    { label: "Michigan", value: "MI" },
+    { label: "New Jersey", value: "NJ" },
+    { label: "Virginia", value: "VA" },
+    { label: "Washington", value: "WA" },
+    { label: "Massachusetts", value: "MA" },
+    { label: "Arizona", value: "AZ" },
+    { label: "Tennessee", value: "TN" },
+    { label: "Indiana", value: "IN" },
+    { label: "Missouri", value: "MO" },
+    { label: "Maryland", value: "MD" },
+    { label: "Minnesota", value: "MN" },
+    { label: "Colorado", value: "CO" },
+    { label: "South Carolina", value: "SC" },
+    { label: "Alabama", value: "AL" },
+    { label: "Kentucky", value: "KY" },
+    { label: "Oregon", value: "OR" },
+    { label: "Oklahoma", value: "OK" },
+    { label: "Connecticut", value: "CT" },
+    { label: "Iowa", value: "IA" },
+    { label: "Utah", value: "UT" },
+    { label: "Nevada", value: "NV" },
+    { label: "Arkansas", value: "AR" },
+    { label: "Mississippi", value: "MS" },
+    { label: "Kansas", value: "KS" },
+    { label: "New Mexico", value: "NM" },
+    { label: "Nebraska", value: "NE" },
+    { label: "West Virginia", value: "WV" },
+    { label: "Idaho", value: "ID" },
+    { label: "Hawaii", value: "HI" },
+    { label: "Maine", value: "ME" },
+    { label: "New Hampshire", value: "NH" },
+    { label: "Montana", value: "MT" },
+    { label: "Rhode Island", value: "RI" },
+    { label: "Delaware", value: "DE" },
+    { label: "South Dakota", value: "SD" },
+    { label: "North Dakota", value: "ND" },
+    { label: "Alaska", value: "AK" },
+    { label: "Vermont", value: "VT" },
+    { label: "Wyoming", value: "WY" },
+    { label: "Louisiana", value: "LA" },
+    { label: "Georgia", value: "GA" },
+    { label: "North Carolina", value: "NC" },
   ];
 
   return (
@@ -120,6 +164,7 @@ export default function CreateAccountPage() {
             <Text style={styles.label}>First Name</Text>
             <TextInput
               placeholder="First"
+              placeholderTextColor={"#666"}
               style={styles.input}
               onChangeText={setFirstName}
             />
@@ -129,6 +174,7 @@ export default function CreateAccountPage() {
             <Text style={styles.label}>Last Name</Text>
             <TextInput
               placeholder="Last"
+              placeholderTextColor={"#666"}
               style={styles.input}
               onChangeText={setLastName}
             />
@@ -138,9 +184,9 @@ export default function CreateAccountPage() {
         <Text style={styles.label}>Email</Text>
         <TextInput
           placeholder="Enter your email"
+          placeholderTextColor={"#666"}
           style={styles.input}
           onChangeText={setEmail}
-          keyboardType="email-address"
           autoCapitalize="none"
         />
 
@@ -151,6 +197,8 @@ export default function CreateAccountPage() {
               type={"custom"}
               options={{ mask: "(999) 999-9999" }}
               placeholder="(123) 456-7890"
+              placeholderTextColor={"#666"}
+              maxLength={14}
               value={phone}
               style={styles.input}
               onChangeText={setPhone}
@@ -162,6 +210,8 @@ export default function CreateAccountPage() {
             <Text style={styles.label}>Zip</Text>
             <TextInput
               placeholder="Zipcode"
+              placeholderTextColor={"#666"}
+              maxLength={5}
               style={styles.input}
               onChangeText={setZip}
               keyboardType="numeric"
@@ -172,6 +222,7 @@ export default function CreateAccountPage() {
         <Text style={styles.label}>Address</Text>
         <TextInput
           placeholder="Street address"
+          placeholderTextColor={"#666"}
           style={styles.input}
           onChangeText={setAddress}
         />
@@ -181,8 +232,10 @@ export default function CreateAccountPage() {
             <Text style={styles.label}>City</Text>
             <TextInput
               placeholder="City"
+              placeholderTextColor={"#666"}
               style={styles.input}
               onChangeText={setCity}
+              keyboardType="default"
             />
           </View>
 
@@ -192,7 +245,9 @@ export default function CreateAccountPage() {
               style={styles.pickerWrapper}
               onPress={() => actionSheetRef.current?.setModalVisible(true)}
             >
-              <Text>{states.find((s) => s.value === state)?.label}</Text>
+              <Text style={{ color: state ? "#000000" : "#888888" }}>
+                {states.find((s) => s.value === state)?.label || "Select a state"}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -200,6 +255,7 @@ export default function CreateAccountPage() {
         <Text style={styles.label}>Password</Text>
         <TextInput
           placeholder="Password"
+          placeholderTextColor={"#666"}
           style={styles.input}
           secureTextEntry
           onChangeText={setPassword}
@@ -208,6 +264,7 @@ export default function CreateAccountPage() {
         <Text style={styles.label}>Confirm Password</Text>
         <TextInput
           placeholder="Confirm password"
+          placeholderTextColor={"#666"}
           style={styles.input}
           secureTextEntry
           onChangeText={setConfirmPassword}
@@ -246,11 +303,13 @@ export default function CreateAccountPage() {
 const styles = StyleSheet.create({
   wrapper: {
     flexGrow: 1,
-    backgroundColor: "#FFE4E8",
+    backgroundColor: "#E7D8C9",
     alignItems: "center",
     paddingTop: Math.round(SCREEN_H * 0.03),
     justifyContent: "center",
     marginTop: "auto",
+  },
+  pickerText: {
   },
   title: {
     fontSize: scaleFont(24),
@@ -281,13 +340,13 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(15),
   },
   input: {
-    backgroundColor: "#FFF5F8",
+    backgroundColor: "#FFF",
     height: 44,
     borderRadius: 10,
     paddingHorizontal: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#FF6B6B",
+    borderColor: "#FFFFFFF",
     width: "100%",
     fontSize: scaleFont(14),
   },
@@ -302,7 +361,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F8F8",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#ddd",
+     borderColor: "#FFFFFFF",
     height: 44,
     justifyContent: "center",
     paddingHorizontal: 10,

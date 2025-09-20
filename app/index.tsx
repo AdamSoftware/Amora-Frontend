@@ -1,24 +1,27 @@
-
 import React from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, ScrollView, ImageBackground } from "react-native";
-import Svg, { Path } from "react-native-svg";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { useFonts, DancingScript_700Bold } from "@expo-google-fonts/dancing-script";
 import { Poppins_400Regular, Poppins_600SemiBold } from "@expo-google-fonts/poppins";
 import AppLoading from "expo-app-loading";
+import { Ionicons } from "@expo/vector-icons";
 import { UserLoginHelper, goToSignup } from "../app/helper/user.js";
 
 const { width, height } = Dimensions.get("window");
 
-const positionHeart = (topPercent: number, leftPercent: number) => ({
-  top: height * topPercent,
-  left: width * leftPercent,
-});
-
-
-const scaleFont = (size: number) => {
+const scaleFont = (size) => {
   const scale = width / 375;
-  const newSize = size * scale;
-  return Math.round(newSize);
+  return Math.round(size * scale);
 };
 
 export default function Index() {
@@ -34,195 +37,182 @@ export default function Index() {
   if (!fontsLoaded) return <AppLoading />;
 
   return (
-    <ImageBackground style={styles.wrapper} source={require("../assets/images/LoginBackground.png")}>
-      <Svg 
-        height={height/2} 
-        width={width} 
-        viewBox=".8 0 32 30.6" 
-        style={styles.heart}
-      >
-        <Path
-          d="M23.6,0c-2.6,0-5,1.2-6.6,3.2C15.4,1.2,13,0,10.4,0C4.7,0,0,4.7,0,10.4
-            c0,11.4,16.9,19.2,16.9,19.2S33.8,21.8,33.8,10.4C33.8,4.7,29.1,0,23.6,0z"
-          fill="#800020"
-          opacity={1.0}
-        />
-      </Svg>
-
-      <ScrollView 
-        contentContainerStyle={styles.scrollWrapper} 
+    <KeyboardAvoidingView style={styles.wrapper}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollWrapper}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>Welcome to Amora 💕</Text>
+          <Text style={styles.appTitle}>Amora🖤</Text>
+          <Text style={styles.subtitle}>
+            Plan, date, and adventure with the love of your life.
+          </Text>
+
+          <Image
+            source={require("../assets/images/couple.png")}
+            style={styles.coupleImage}
+            resizeMode="contain"
+          />
         </View>
 
         <View style={styles.form}>
-          <Text style={styles.label}>Firstname</Text>
-          <TextInput
-            placeholder="Enter your Firstname"
-            style={styles.input}
-            onChangeText={setUsername}
-          />
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            placeholder="Enter your password"
-            style={styles.input}
-            secureTextEntry
-            onChangeText={setPassword}
-          />
+          <View style={styles.inputWrapper}>
+            <Ionicons name="person-outline" size={20} color="#fff" style={styles.icon} />
+            <TextInput
+              placeholder="Username..."
+              placeholderTextColor="#fff"
+              style={styles.input}
+              onChangeText={setUsername}
+            />
+          </View>
+
+          <View style={styles.inputWrapper}>
+            <Ionicons name="lock-closed-outline" size={20} color="#fff" style={styles.icon} />
+            <TextInput
+              placeholder="Password..."
+              placeholderTextColor="#fff"
+              style={styles.input}
+              secureTextEntry
+              onChangeText={setPassword}
+            />
+          </View>
+
+          <TouchableOpacity
+            style={styles.forgotPassword}
+            onPress={() => console.log("Forgot Password pressed")}
+          >
+            <Text style={styles.forgotText}>Forgot password?</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.buttonLogin}
+            onPress={() => UserLoginHelper.login(username, password)}
+          >
+            <Text style={styles.buttonText}>LOGIN</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {/* Bottom Buttons */}
-      <View style={styles.bottomWrapper}>
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity
-            style={styles.buttonSecondary}
-            onPress={() => console.log("Forgot Password pressed")}
-          >
-            <Text style={styles.buttonText}>Forgot password?</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.buttonSecondary}
-            onPress={() => goToSignup()}
-          >
-            <Text style={styles.buttonText}>Sign up 💕</Text>
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity
-          style={styles.buttonLogin}
-          onPress={() => UserLoginHelper.login(username, password)}
-        >
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-      </View>
-    </ImageBackground>
+      <TouchableOpacity
+        style={styles.floatingSignUp}
+        onPress={() => goToSignup()}
+      >
+        <Text style={styles.buttonText}>Sign up 💕</Text>
+      </TouchableOpacity>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
+    backgroundColor: "#E7D8C9",
     flex: 1,
-    backgroundColor: "#FFC0C9",
-    alignItems: "center",
     justifyContent: "center",
-  },
-  heartDecor: {
-    position: "absolute",
+    alignItems: "center",
   },
   scrollWrapper: {
     flexGrow: 1,
-    justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  heart: {
-    position: "absolute",
+    justifyContent: "center",
+    width: width,
+    padding: 20,
   },
   titleContainer: {
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 20,
   },
-  title: {
-    fontSize: scaleFont(33),
+  appTitle: {
+    fontSize: scaleFont(60),
     fontFamily: "DancingScript_700Bold",
-    color: "#fff",
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 4,
+    color: "#000",
     textAlign: "center",
   },
   subtitle: {
     fontSize: scaleFont(16),
     fontFamily: "Poppins_400Regular",
-    color: "#fff",
-    marginTop: 5,
+    color: "#000",
+    marginTop: 8,
     textAlign: "center",
+  },
+  coupleImage: {
+    width: width * 0.6,
+    height: height * 0.27,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.9,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 6,
+    elevation: 8,
   },
   form: {
-    width: "90%",
+    width: "100%",
     maxWidth: 320,
-    marginTop: 40,
-    alignItems: "center",
-    justifyContent: "center",
+    marginBottom: 20,
   },
-  label: {
-    fontFamily: "Poppins_600SemiBold",
-    color: "#fff",
-    marginBottom: 5,
-    fontSize: scaleFont(15),
-    alignSelf: "center",
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F4A7B9",
+    borderRadius: 25,
+    paddingHorizontal: 12,
+    marginBottom: 15,
+  },
+  icon: {
+    marginRight: 8,
   },
   input: {
-    width: "90%",
-    maxWidth: 320,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 15,
-    bottom: 5,
-    fontFamily: "Poppins_400Regular",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    textAlign: "center",
-    fontSize: scaleFont(14),
-  },
-  bottomWrapper: {
-    width: "100%",
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-    position: "absolute",
-    bottom: 0,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  bottomContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    width: "100%",
-    marginBottom: 15,
-  },
-  buttonSecondary: {
-    backgroundColor: "#800020",
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderRadius: 25,
-    alignItems: "center",
     flex: 1,
-    marginHorizontal: 5,
-    shadowColor: "#000",
-    shadowOpacity: 1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 4,
-    marginBottom: 10,
+    color: "#000",
+    fontFamily: "Poppins_400Regular",
+    fontSize: scaleFont(14),
+    paddingVertical: 12,
   },
   buttonLogin: {
-    backgroundColor: "#800020",
-    paddingVertical: 15,
-    paddingHorizontal: 80,
+    backgroundColor: "#F4A7B9",
+    paddingVertical: 11,
+    paddingHorizontal: 50,
     borderRadius: 30,
     alignSelf: "center",
+    marginBottom: 20,
     shadowColor: "#000",
-    shadowOpacity: 1,
+    shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 4,
-    
+    shadowRadius: 4,
+    elevation: 3,
+    marginTop: 30,
+    width: "55%",
   },
   buttonText: {
     fontFamily: "Poppins_600SemiBold",
     color: "#fff",
-    fontSize: scaleFont(15),
+    fontSize: scaleFont(14),
     textAlign: "center",
-    justifyContent: "center",
+  },
+  forgotPassword: {
+    alignSelf: "flex-end",
+    marginBottom: 15,
+  },
+  forgotText: {
+    color: "#000",
+    fontFamily: "Poppins_400Regular",
+    fontSize: scaleFont(12),
+  },
+  floatingSignUp: {
+    position: "absolute",
+    bottom: 60,
+    alignSelf: "center",
+    backgroundColor: "#F4A7B9",
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 30,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 
