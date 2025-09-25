@@ -4,6 +4,7 @@ const BaseURL = Constants.expoConfig.extra.apiBaseUrl;
 console.log("BaseURL is:", BaseURL);
 
 export const LoginAPIHelper = {
+  
   async LoginToken(endpoint, bodyData) {
     const fullURL = `${BaseURL}${endpoint}`;
     console.log("LoginAPIHelper called with:", endpoint, bodyData);
@@ -19,16 +20,15 @@ export const LoginAPIHelper = {
       });
 
       if (!response.ok) {
-        const errorText = await response.text(); // optional: see backend message
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        const data = await response.json();
+        throw new Error(`Error: ${data?.Message}`);
       }
 
-      const data = await response.json(); // parse JSON
-      console.log("Login response:", data);
+      const data = await response.json();
       return data;
     } catch (err) {
       console.error("API POST request failed:", err);
-      return null;
+      throw err;
     }
   },
 };

@@ -12,6 +12,7 @@ import ActionSheet from "react-native-actions-sheet";
 import { Picker } from "@react-native-picker/picker";
 import { goToLogin, UserCreateAccountHelper } from "../helper/user";
 import { TextInputMask } from "react-native-masked-text";
+import { scaleFont } from "../helper/FontHelpers.js";
 
 const CARD_MAX = 420;
 const CARD_MIN = 320;
@@ -22,12 +23,6 @@ const cardWidth = Math.max(
   Math.max(SCREEN_W * 0.88, CARD_MIN),
   CARD_MAX
 );
-
-const scaleFont = (size: number) => {
-  const scale = SCREEN_W / 375;
-  const newSize = size * scale;
-  return Math.round(newSize);
-};
 
 export default function CreateAccountPage() {
   const actionSheetRef = useRef(null);
@@ -42,7 +37,6 @@ export default function CreateAccountPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Responsive card math: takes a percentage of screen width, with min & max bounds
   const CARD_MIN = 300;
   const CARD_MAX = 420;
   const cardWidth = Math.max(CARD_MIN, Math.min(SCREEN_W * 0.92, CARD_MAX));

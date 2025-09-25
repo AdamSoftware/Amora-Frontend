@@ -16,17 +16,32 @@ import { Poppins_400Regular, Poppins_600SemiBold } from "@expo-google-fonts/popp
 import AppLoading from "expo-app-loading";
 import { Ionicons } from "@expo/vector-icons";
 import { UserLoginHelper, goToSignup } from "../app/helper/user.js";
+import { scaleFont } from "../app/helper/FontHelpers.js";
 
 const { width, height } = Dimensions.get("window");
-
-const scaleFont = (size) => {
-  const scale = width / 375;
-  return Math.round(size * scale);
-};
 
 export default function Index() {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
+
+
+  const [errorMessage, setErrorMessage] = React.useState("");
+
+  const handleLogin = async () => {
+    setErrorMessage("");
+    try {
+      const res = await UserLoginHelper.login(username, password);
+      if (!res) {
+        setErrorMessage("Invalid username or password.");
+        setTimeout(() => setErrorMessage(""), 5000);
+        return;
+      }
+    } catch (err: any) {
+      console.error(err);
+      setErrorMessage(err.message || "An error occurred during login.");
+      setTimeout(() => setErrorMessage(""), 5000);
+    }
+  };
 
   let [fontsLoaded] = useFonts({
     DancingScript_700Bold,
@@ -40,6 +55,7 @@ export default function Index() {
     <KeyboardAvoidingView style={styles.wrapper}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+
       <ScrollView
         contentContainerStyle={styles.scrollWrapper}
         keyboardShouldPersistTaps="handled"
@@ -55,6 +71,12 @@ export default function Index() {
             style={styles.coupleImage}
             resizeMode="contain"
           />
+
+          {errorMessage ? (
+            <Text style={styles.errorMessage}>
+              {errorMessage}
+            </Text>
+          ) : null}
         </View>
 
         <View style={styles.form}>
@@ -77,6 +99,8 @@ export default function Index() {
               secureTextEntry
               onChangeText={setPassword}
             />
+
+
           </View>
 
           <TouchableOpacity
@@ -88,7 +112,7 @@ export default function Index() {
 
           <TouchableOpacity
             style={styles.buttonLogin}
-            onPress={() => UserLoginHelper.login(username, password)}
+            onPress={() => handleLogin()}
           >
             <Text style={styles.buttonText}>LOGIN</Text>
           </TouchableOpacity>
@@ -147,6 +171,14 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 8,
   },
+  errorMessage: {
+    color: "red",
+    fontFamily: "Poppins_400Regular",
+    fontSize: scaleFont(13),
+    textAlign: "center",
+    maxWidth: width * 0.8,
+  },
+
   form: {
     width: "100%",
     maxWidth: 320,

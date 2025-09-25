@@ -19,7 +19,6 @@ export default class UserHelper {
 const UserLoginHelper = {
   async login(username, password) {
     try {
-      // API call would use username + password
       var response = await LoginAPIHelper.LoginToken('/users/login', { email: username, password: password });
       
 
@@ -42,13 +41,13 @@ const UserLoginHelper = {
         console.log(UserHelper.phonenumber);
         console.log(UserHelper.id);
 
-        return true;
+        return {success: true};
       } else {
-        return false;
+        throw new Error(`Error: ${response.message}`);
       }
     } catch (err) {
       console.error("Login failed:", err);
-      return false;
+      throw err;
     }
   }
 };

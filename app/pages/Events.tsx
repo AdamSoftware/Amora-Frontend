@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { useFonts, DancingScript_700Bold } from "@expo-google-fonts/dancing-script";
 import { Poppins_400Regular, Poppins_600SemiBold } from "@expo-google-fonts/poppins";
@@ -15,6 +16,10 @@ import TopRight from "../components/TopRight";
 import GenericAPIHelper from "../helper/GenericAPIHelper";
 import UserHelper from "../helper/user";
 import { Swipeable } from "react-native-gesture-handler";
+import { scaleFont } from "../helper/FontHelpers.js";
+import { LinearGradient } from "expo-linear-gradient";
+
+const { width, height } = Dimensions.get("window");
 
 export default function Events() {
   const [fontsLoaded] = useFonts({
@@ -22,15 +27,6 @@ export default function Events() {
     Poppins_400Regular,
     Poppins_600SemiBold,
   });
-
-  const handleDelete = async (id: string) => {
-    try {
-      await GenericAPIHelper.GenericAPIDelete(`/events/${id}`);
-      setEvents((prev) => prev.filter((event) => event.id !== id));
-    } catch (error) {
-      console.error("API DELETE request failed:", error);
-    }
-  };
 
   const [events, setEvents] = useState<
     Array<{ id: string; title: string; description: string; isActive: string; date: string }>
@@ -43,13 +39,8 @@ export default function Events() {
         const data = await GenericAPIHelper.GenericAPIGet("/events/user/" + UserHelper.id);
 
         let eventsArray = [];
-        if (Array.isArray(data)) {
-          eventsArray = data;
-        }
-        else if (data) {
-          eventsArray = [data];
-        }
-
+        if (Array.isArray(data)) eventsArray = data;
+        else if (data) eventsArray = [data];
 
         const mapped = eventsArray.map((e: any) => {
           const rawDate = e.DateOfEvent || "";
@@ -87,127 +78,169 @@ export default function Events() {
     return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: "center" }} />;
 
   const renderRightActions = (id: string) => (
-    <TouchableOpacity
-      style={styles.deleteButton}
-      onPress={() => {
-        console.log("Delete event:", id);
-        setEvents((prev) => prev.filter((e) => e.id !== id));
-        handleDelete(id);
-      }}
-    >
-      <Text style={styles.deleteText}>Delete</Text>
-    </TouchableOpacity>
+    <View style={styles.swipeActionsContainer}>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => {
+          setEvents((prev) => prev.filter((e) => e.id !== id));
+          GenericAPIHelper.GenericAPIDelete(`/events/${id}`);
+        }}
+      >
+        <Text style={styles.deleteText}>Delete</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => console.log("Edit event:", id)}
+      >
+        <Text style={styles.editText}>Edit</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderEventCard = (item: any) => (
+    <Swipeable renderRightActions={() => renderRightActions(item.id)}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => console.log("Open Event:", item.title)}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.cardTitle}>{item.title}</Text>
+        <Text style={styles.cardDescription}>{item.description}</Text>
+
+        <View style={styles.badgeContainer}>
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: item.isActive === "Active" ? "#4CAF50" : "#E63946" },
+            ]}
+          >
+            <Text style={styles.badgeText}>{item.isActive}</Text>
+          </View>
+
+          <View style={styles.dateBadge}>
+            <Text style={styles.badgeText}>{item.date}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </Swipeable>
   );
 
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.WelcomeContainer}>
-        <TopLeft />
+    <LinearGradient colors={["#FDE2E2", "#F9C5C5"]} style={styles.wrapper}>
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <View style={styles.WelcomeContainer}>
+          <TopLeft />
+        </View>
+        <View style={styles.TopRightContainer}>
+          <TopRight currentPage={"Events"} />
+        </View>
+        <View style={styles.titleContainer}>
+          <Text style={styles.appTitle}>Events</Text>
+        </View>
       </View>
 
-      <View style={styles.TopRightContainer}>
-        <TopRight currentPage={"Events"} />
-      </View>
-
+      {/* Only events scroll */}
       <FlatList
-        data={[
-          ...events,
-          { id: "add", title: "Add New Event", description: "", isActive: "", date: "" },
-        ]}
+        style={styles.listContainer}
+        data={events}
         keyExtractor={(item) => item.id}
         numColumns={1}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.cardsWrapper}
-        ListHeaderComponent={
-          <View style={styles.titleContainer}>
-            <Text style={styles.appTitle}>Events</Text>
-          </View>
-        }
-        renderItem={({ item }) => {
-          if (item.id === "add") {
-            return (
-              <TouchableOpacity
-                style={[styles.card, styles.addCard]}
-                onPress={() => console.log("Open Add Event form")}
-                activeOpacity={0.8}
-              >
-                <Text style={[styles.cardTitle, styles.addCardText]}>{item.title}</Text>
-              </TouchableOpacity>
-            );
-          }
-
-          return (
-            <Swipeable renderRightActions={() => renderRightActions(item.id)}>
-              <TouchableOpacity
-                style={styles.card}
-                onPress={() => console.log("Open Event:", item.title)}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text style={styles.cardDescription}>{item.description}</Text>
-                <Text style={styles.cardStatus}>{"Status: " + item.isActive}</Text>
-                <Text style={styles.cardStatus}>{"Date: " + item.date}</Text>
-              </TouchableOpacity>
-            </Swipeable>
-          );
-        }}
+        renderItem={({ item }) => renderEventCard(item)}
       />
-    </View>
+
+      {/* Fixed Add Card */}
+      <TouchableOpacity
+        style={styles.addCardFixed}
+        onPress={() => console.log("Open Add Event form")}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.addIcon}>+</Text>
+        <Text style={[styles.cardTitle, styles.addCardText]}>Add New Event</Text>
+      </TouchableOpacity>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: "#E7D8C9",
+  },
+  headerContainer: {
+    paddingTop: 60,
+    paddingBottom: 20,
   },
   WelcomeContainer: {
     alignItems: "center",
-    marginTop: 60,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   TopRightContainer: {
     alignItems: "center",
-    marginTop: 60,
-    marginBottom: 20,
+    marginTop: 75
   },
   titleContainer: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   appTitle: {
     fontFamily: "DancingScript_700Bold",
-    fontSize: 48,
-    color: "#000",
-    marginBottom: 10,
+    fontSize: scaleFont(50),
+    color: "#ff6f61",
+  },
+  listContainer: {
+    flex: 1,
   },
   cardsWrapper: {
     justifyContent: "center",
     alignItems: "center",
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    padding: 30,
+    alignSelf: "center",
+    paddingBottom: 100,
   },
   card: {
-    backgroundColor: "#D58A94",
-    width: 340,
-    borderRadius: 15,
-    margin: 15,
-    padding: 15,
+    alignSelf: "center",
+    backgroundColor: "#FFB6B9",
+    width: "90%",
+    height: height * 0.2,
+    borderRadius: 30,
+    marginVertical: 10,
+    padding: 20,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.9,
     shadowRadius: 5,
-    elevation: 3,
+    elevation: 9,
   },
-  addCard: {
+  addCardFixed: {
+    position: "absolute",
+    bottom: 30,
+    alignSelf: "center",
     backgroundColor: "#F4A7B9",
+    borderRadius: 30,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    width: "60%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.7,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  addIcon: {
+    fontSize: scaleFont(30),
+    fontWeight: "bold",
+    marginRight: 10,
+    color: "#000",
   },
   cardTitle: {
     fontFamily: "DancingScript_700Bold",
-    fontSize: 24,
+    fontSize: scaleFont(30),
     textAlign: "center",
     color: "#000",
     padding: 4,
@@ -215,34 +248,70 @@ const styles = StyleSheet.create({
   addCardText: {
     color: "#000",
     fontWeight: "bold",
-    fontSize: 28,
+    fontSize: scaleFont(28),
   },
   cardDescription: {
     fontFamily: "Poppins_400Regular",
-    fontSize: 15,
-    marginTop: 5,
+    fontSize: scaleFont(15),
+    lineHeight: scaleFont(22),
+    marginTop: 8,
     color: "#000",
     textAlign: "center",
   },
-  cardStatus: {
-    fontFamily: "Poppins_400Regular",
-    fontSize: 15,
-    color: "#000",
-    marginTop: 3,
+  badgeContainer: {
+    flexDirection: "row",
+    marginTop: 10,
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  statusBadge: {
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  dateBadge: {
+    backgroundColor: "#1D3557",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  badgeText: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: scaleFont(13),
+    color: "#fff",
     textAlign: "center",
   },
   deleteButton: {
     backgroundColor: "#E63946",
+    height: 40,
     justifyContent: "center",
     alignItems: "center",
     width: 100,
-    marginVertical: 15,
     borderRadius: 15,
+    marginVertical: 5,
   },
   deleteText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: scaleFont(18),
+  },
+  editButton: {
+    backgroundColor: "#4CAF50",
+    marginTop: 10,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 100,
+    borderRadius: 15,
+  },
+  editText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: scaleFont(18),
+  },
+  swipeActionsContainer: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
