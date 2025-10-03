@@ -47,6 +47,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     bottom: 40,
     right: 25,
+    zIndex: 4000,
+    elevation: 4000,
   },
   menu: {
     marginTop: 10,
@@ -57,7 +59,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
-    elevation: 5,
+    elevation: 100,
+    zIndex: 4001,
   },
   menuItem: {
     paddingVertical: 5,

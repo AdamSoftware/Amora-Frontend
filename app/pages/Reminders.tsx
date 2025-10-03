@@ -6,17 +6,22 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { useFonts, DancingScript_700Bold } from "@expo-google-fonts/dancing-script";
 import { Poppins_400Regular, Poppins_600SemiBold } from "@expo-google-fonts/poppins";
 import AppLoading from "expo-app-loading";
-import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 import TopLeft from "../components/TopLeft";
 import TopRight from "../components/TopRight";
 import GenericAPIHelper from "../helper/GenericAPIHelper";
 import UserHelper from "../helper/user";
-import formateTime from "../helper/formateTime";
+import { Swipeable, GestureHandlerRootView } from "react-native-gesture-handler";
 import { scaleFont } from "../helper/FontHelpers.js";
+import { LinearGradient } from "expo-linear-gradient";
+import formateTime from "../helper/formateTime";
+import { fetchRemindersWithTitles } from "../helper/FetchReminders";
+import  EmptyList  from "../components/EmptyList";
+
 
 export default function Reminders() {
   const [fontsLoaded] = useFonts({
@@ -29,52 +34,15 @@ export default function Reminders() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const remindersData = await GenericAPIHelper.GenericAPIGet(`/reminders/user/${UserHelper.id}`);
-        const reservationsData = await GenericAPIHelper.GenericAPIGet(`/reservations/user/${UserHelper.id}`);
-        
-        const remindersArray = Array.isArray(remindersData) ? remindersData : [remindersData];
-        const reservationsArray = Array.isArray(reservationsData) ? reservationsData : [reservationsData];
-
-        const remindersWithTitle = await Promise.all(
-          remindersArray.map(async (reminder: any) => {
-            const res = reservationsArray.find(r => r.Id === reminder.ReservationId);
-            let EventTitle = "";
-            let title = "";
-
-            if (res?.ResterantId) {
-              const restaurant = await GenericAPIHelper.GenericAPIGet(`/restaurants/${res.ResterantId}`);
-              title = "Restaurant: " + (restaurant?.Name || "Unknown");
-            } else if (res?.VenueId) {
-              const venue = await GenericAPIHelper.GenericAPIGet(`/venues/${res.VenueId}`);
-              title = "Venue: " + (venue?.Name || "Unknown");
-            } else if (res?.ExperienceId) {
-              const exp = await GenericAPIHelper.GenericAPIGet(`/experiences/${res.ExperienceId}`);
-              title = "Experience: " + (exp?.Name || "Unknown");
-            }
-
-            if (res?.EventId) {
-              const event = await GenericAPIHelper.GenericAPIGet(`/events/${res.EventId}`);
-              EventTitle = "Event: " + (event?.Name || "Unknown");
-            }
-
-            return { ...reminder, title , EventTitle };
-          })
-        );
-
-        setReminders(remindersWithTitle);
-        setReservations(reservationsArray);
-      } catch (err) {
-        console.error("Error fetching reminders/reservations:", err);
-      } finally {
-        setLoading(false);
-      }
+    async function loadReminders() {
+      const { reminders, reservations } = await fetchRemindersWithTitles(UserHelper.id);
+      setReminders(reminders);
+      setReservations(reservations);
+      setLoading(false);
     }
 
-    fetchData();
+    loadReminders();
   }, []);
-
 
   const handleDelete = async (id: string) => {
     try {
@@ -86,12 +54,47 @@ export default function Reminders() {
   };
 
   const renderRightActions = (id: string) => (
-    <TouchableOpacity
-      style={styles.deleteButton}
-      onPress={() => handleDelete(id)}
-    >
-      <Text style={styles.deleteText}>Delete</Text>
-    </TouchableOpacity>
+    <View style={styles.swipeActionsContainer}>
+      <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(id)}>
+        <Text style={styles.deleteText}>Delete</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.editButton} onPress={() => console.log("Edit reminder", id)}>
+        <Text style={styles.editText}>Edit</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderReminderCard = (item: any) => (
+    <Swipeable renderRightActions={() => renderRightActions(item.Id.toString())}>
+
+ 
+      <TouchableOpacity style={styles.card} activeOpacity={0.8}>
+        <Text style={styles.cardTitle}>{item.title}</Text>
+        <Text style={styles.cardTitle}>{item.EventTitle}</Text>
+        <Text style={styles.cardDescription}>
+          Scheduled:{" "}
+          {item.ScheduledDate
+            ? new Date(item.ScheduledDate).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })
+            : "No date set"}{" "}
+          at {item.ScheduledTime ? formateTime(item.ScheduledTime) : "--:--"}
+        </Text>
+        <View style={styles.badgeContainer}>
+          <View style={[styles.statusBadge, { backgroundColor: "#4CAF50" }]}>
+            <Text style={styles.badgeText}>Active</Text>
+          </View>
+          <View style={styles.dateBadge}>
+            <Text style={styles.badgeText}>
+              {item.ReminderTime ? formateTime(item.ReminderTime) : "--:--"}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+
+    </Swipeable>
   );
 
   if (!fontsLoaded) return <AppLoading />;
@@ -99,161 +102,190 @@ export default function Reminders() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.wrapper}>
+      <LinearGradient colors={["#FDE2E2", "#F9C5C5"]} style={styles.wrapper}>
+
         <View style={styles.WelcomeContainer}>
           <TopLeft />
         </View>
 
-        <View style={styles.TopRightContainer}>
+        <View style={styles.topRightWrapper}>
           <TopRight currentPage={"Reminders"} />
         </View>
 
-        <FlatList
-          data={[...reminders, { Id: "add", title: "Add New Reminder" }]}
-          keyExtractor={item => item.Id.toString()}
-          contentContainerStyle={styles.cardsWrapper}
-          ListHeaderComponent={
-            <View style={styles.titleContainer}>
-              <Text style={styles.appTitle}>Reminders</Text>
-            </View>
-          }
-          renderItem={({ item }) => {
-            if (item.Id === "add") {
-              return (
-                <TouchableOpacity style={[styles.card, styles.addCard]} onPress={() => console.log("Add Reminder")}>
-                  <Text style={[styles.cardTitle, styles.addCardText]}>{item.title}</Text>
-                </TouchableOpacity>
-              );
-            }
+        <View style={styles.titleContainer}>
+          <Text style={styles.appTitle}>Reminders</Text>
+        </View>
+        <EmptyList ListName={reminders} Name="reminder" />
 
-            return (
-              <Swipeable renderRightActions={() => renderRightActions(item.Id.toString())}>
-                <TouchableOpacity style={styles.card} activeOpacity={0.8}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text style={styles.cardTitle}>{item.EventTitle}</Text>
-                  <Text style={styles.cardDescription}>
-                    Scheduled: {new Date(item.ScheduledDate).toLocaleDateString("en-US",{
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })} at {formateTime(item.ScheduledTime)}
-                  </Text>
-                  <Text style={styles.cardStatus}>
-                    Reminder: {formateTime(item.ReminderTime)}
-                  </Text>
-                </TouchableOpacity>
-              </Swipeable>
-            );
-          }}
+        <FlatList
+          data={reminders}
+          keyExtractor={(item) => item.Id.toString()}
+          contentContainerStyle={styles.cardsWrapper}
+          renderItem={({ item }) => renderReminderCard(item)}
+          showsVerticalScrollIndicator={false}
         />
-      </View>
+
+
+
+        <TouchableOpacity
+          style={styles.addCardFixed}
+          onPress={() => console.log("Open Add Reminder form")}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addIcon}>+</Text>
+          <Text style={[styles.cardTitle, styles.addCardText]}>Add Reminder</Text>
+        </TouchableOpacity>
+
+     </LinearGradient>
     </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: "#E7D8C9",
+  wrapper: 
+  { 
+   flex: 1 
   },
-
-  WelcomeContainer: {
+  WelcomeContainer: { 
+    alignItems: "center", 
+    marginTop: 60 
+  },
+  topRightWrapper: { 
     alignItems: "center",
-    marginTop: 60,
-    marginBottom: 20,
+    marginTop: 80,
+    position: "relative",
+    zIndex: 2000,
   },
-
-  TopRightContainer: {
-    alignItems: "center",
-    marginTop: 60,
-    marginBottom: 20,
-  },
-
   titleContainer: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 10,
   },
-
   appTitle: {
     fontFamily: "DancingScript_700Bold",
     fontSize: scaleFont(50),
-    color: "#000",
-    marginBottom: 10,
+    color: "#ff6f5f",
   },
-
   cardsWrapper: {
     justifyContent: "center",
     alignItems: "center",
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    padding: 30,
+    paddingBottom: 120,
   },
-
   card: {
-    backgroundColor: "#D58A94",
-    width: 340,
-    borderRadius: 15,
-    margin: 15,
-    padding: 15,
+    alignSelf: "center",
+    backgroundColor: "#FFB6B9",
+    width: "90%",
+    borderRadius: 30,
+    marginVertical: 10,
+    padding: 20,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.9,
     shadowRadius: 5,
-    elevation: 3,
-  },
-
-  addCard: {
-    backgroundColor: "#F4A7B9",
+    elevation: 9,
   },
 
   cardTitle: {
     fontFamily: "DancingScript_700Bold",
-    fontSize: scaleFont(25),
+    fontSize: scaleFont(30),
     textAlign: "center",
     color: "#000",
     padding: 4,
   },
 
-  addCardText: {
-    color: "#000",
-    fontWeight: "bold",
-    fontSize: scaleFont(28),
-  },
-
   cardDescription: {
     fontFamily: "Poppins_400Regular",
     fontSize: scaleFont(15),
-    marginTop: 5,
+    marginTop: 8,
     color: "#000",
     textAlign: "center",
   },
-  cardStatus: {
-    fontFamily: "Poppins_400Regular",
-    fontSize: scaleFont(15),
-    color: "#000",
-    marginTop: 3,
+
+  badgeContainer: {
+    flexDirection: "row",
+    marginTop: 10,
+    justifyContent: "space-around",
+    width: "100%",
+  },
+
+  statusBadge: {
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  dateBadge: {
+    backgroundColor: "#1D3557",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  badgeText: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: scaleFont(13),
+    color: "#fff",
     textAlign: "center",
   },
+
+  swipeActionsContainer: { justifyContent: "center", alignItems: "center" },
 
   deleteButton: {
     backgroundColor: "#E63946",
+    height: 40,
     justifyContent: "center",
     alignItems: "center",
     width: 100,
-    marginVertical: 15,
     borderRadius: 15,
+    marginVertical: 5,
   },
-
   deleteText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: scaleFont(18),
   },
-});
 
+  editButton: {
+    backgroundColor: "#4CAF50",
+    marginTop: 10,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 100,
+    borderRadius: 15,
+  },
+  editText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: scaleFont(18),
+  },
+  addCardFixed: {
+    position: "absolute",
+    bottom: 30,
+    alignSelf: "center",
+    backgroundColor: "#F4A7B9",
+    borderRadius: 30,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    width: "60%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.7,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  addIcon: {
+    fontSize: scaleFont(30),
+    fontWeight: "bold",
+    marginRight: 10,
+    color: "#000",
+  },
+  addCardText: {
+    color: "#000",
+    fontWeight: "bold",
+    fontSize: scaleFont(28),
+  },
+});
 

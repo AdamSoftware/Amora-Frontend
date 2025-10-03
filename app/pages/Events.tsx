@@ -18,6 +18,8 @@ import UserHelper from "../helper/user";
 import { Swipeable } from "react-native-gesture-handler";
 import { scaleFont } from "../helper/FontHelpers.js";
 import { LinearGradient } from "expo-linear-gradient";
+import { fetchEvents } from "../helper/FetchReminders";
+import EmptyList from "../components/EmptyList";
 
 const { width, height } = Dimensions.get("window");
 
@@ -27,50 +29,16 @@ export default function Events() {
     Poppins_400Regular,
     Poppins_600SemiBold,
   });
-
-  const [events, setEvents] = useState<
-    Array<{ id: string; title: string; description: string; isActive: string; date: string }>
-  >([]);
+  const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchEvents() {
-      try {
-        const data = await GenericAPIHelper.GenericAPIGet("/events/user/" + UserHelper.id);
-
-        let eventsArray = [];
-        if (Array.isArray(data)) eventsArray = data;
-        else if (data) eventsArray = [data];
-
-        const mapped = eventsArray.map((e: any) => {
-          const rawDate = e.DateOfEvent || "";
-          const formattedDate = rawDate
-            ? new Date(rawDate).toLocaleString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })
-            : "No date set";
-
-          return {
-            id: e.Id.toString(),
-            title: e.Name,
-            description: e.Description,
-            date: formattedDate,
-            isActive: e.IsActive ? "Active" : "Inactive",
-          };
-        });
-
-        setEvents(mapped);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
+    async function loadEvents() {
+      const mapped = await fetchEvents(UserHelper.id);
+      setEvents(mapped);
+      setLoading(false);
     }
-
-    fetchEvents();
+    loadEvents();
   }, []);
 
   if (!fontsLoaded) return <AppLoading />;
@@ -127,8 +95,7 @@ export default function Events() {
 
   return (
     <LinearGradient colors={["#FDE2E2", "#F9C5C5"]} style={styles.wrapper}>
-      {/* Header */}
-      <View style={styles.headerContainer}>
+      <View style={styles.headerContainer} />
         <View style={styles.WelcomeContainer}>
           <TopLeft />
         </View>
@@ -138,9 +105,8 @@ export default function Events() {
         <View style={styles.titleContainer}>
           <Text style={styles.appTitle}>Events</Text>
         </View>
-      </View>
-
-      {/* Only events scroll */}
+      <View />
+      <EmptyList ListName={events} Name="event" />
       <FlatList
         style={styles.listContainer}
         data={events}
@@ -151,7 +117,6 @@ export default function Events() {
         renderItem={({ item }) => renderEventCard(item)}
       />
 
-      {/* Fixed Add Card */}
       <TouchableOpacity
         style={styles.addCardFixed}
         onPress={() => console.log("Open Add Event form")}
@@ -169,16 +134,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    paddingTop: 60,
-    paddingBottom: 20,
   },
   WelcomeContainer: {
     alignItems: "center",
-    marginBottom: 10,
+    marginTop: 60,
   },
   TopRightContainer: {
     alignItems: "center",
-    marginTop: 75
+    marginTop: 80,
+    position: "relative",
+    zIndex: 2000,
   },
   titleContainer: {
     alignItems: "center",
@@ -187,7 +152,7 @@ const styles = StyleSheet.create({
   appTitle: {
     fontFamily: "DancingScript_700Bold",
     fontSize: scaleFont(50),
-    color: "#ff6f61",
+    color: "#ff6f5f",
   },
   listContainer: {
     flex: 1,

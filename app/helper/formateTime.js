@@ -7,5 +7,7 @@ function formatTime(time24) {
   return `${hour}:${minute.toString().padStart(2, "0")} ${ampm}`;
 }
 
+
+
 export default formatTime;
 

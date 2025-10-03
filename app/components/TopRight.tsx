@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   menu: {
+    zIndex: 4000,
     position: "absolute",
     top: 42, 
     right: -15,
@@ -142,6 +143,7 @@ const styles = StyleSheet.create({
   },
   menuRow: {
     paddingVertical: 15,
+    zIndex: 4001,
   },
   menuItem: {
     color: "#E7D8C9",

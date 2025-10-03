@@ -17,6 +17,7 @@ import AppLoading from "expo-app-loading";
 import { Ionicons } from "@expo/vector-icons";
 import { UserLoginHelper, goToSignup } from "../app/helper/user.js";
 import { scaleFont } from "../app/helper/FontHelpers.js";
+import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get("window");
 
@@ -52,86 +53,87 @@ export default function Index() {
   if (!fontsLoaded) return <AppLoading />;
 
   return (
-    <KeyboardAvoidingView style={styles.wrapper}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-
-      <ScrollView
-        contentContainerStyle={styles.scrollWrapper}
-        keyboardShouldPersistTaps="handled"
+    <LinearGradient colors={["#FDE2E2", "#F9C5C5"]} style={styles.wrapper}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View style={styles.titleContainer}>
-          <Text style={styles.appTitle}>Amora🖤</Text>
-          <Text style={styles.subtitle}>
-            Plan, date, and adventure with the love of your life.
-          </Text>
 
-          <Image
-            source={require("../assets/images/couple.png")}
-            style={styles.coupleImage}
-            resizeMode="contain"
-          />
-
-          {errorMessage ? (
-            <Text style={styles.errorMessage}>
-              {errorMessage}
+        <ScrollView
+          contentContainerStyle={styles.scrollWrapper}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.titleContainer}>
+            <Text style={styles.appTitle}>Amora🖤</Text>
+            <Text style={styles.subtitle}>
+              Plan, date, and adventure with the love of your life.
             </Text>
-          ) : null}
-        </View>
 
-        <View style={styles.form}>
-          <View style={styles.inputWrapper}>
-            <Ionicons name="person-outline" size={20} color="#fff" style={styles.icon} />
-            <TextInput
-              placeholder="Username..."
-              placeholderTextColor="#fff"
-              style={styles.input}
-              onChangeText={setUsername}
-            />
-          </View>
-
-          <View style={styles.inputWrapper}>
-            <Ionicons name="lock-closed-outline" size={20} color="#fff" style={styles.icon} />
-            <TextInput
-              placeholder="Password..."
-              placeholderTextColor="#fff"
-              style={styles.input}
-              secureTextEntry
-              onChangeText={setPassword}
+            <Image
+              source={require("../assets/images/couple.png")}
+              style={styles.coupleImage}
+              resizeMode="contain"
             />
 
-
+            {errorMessage ? (
+              <Text style={styles.errorMessage}>
+                {errorMessage}
+              </Text>
+            ) : null}
           </View>
 
-          <TouchableOpacity
-            style={styles.forgotPassword}
-            onPress={() => console.log("Forgot Password pressed")}
-          >
-            <Text style={styles.forgotText}>Forgot password?</Text>
-          </TouchableOpacity>
+          <View style={styles.form}>
+            <View style={styles.inputWrapper}>
+              <Ionicons name="person-outline" size={20} color="#fff" style={styles.icon} />
+              <TextInput
+                placeholder="Username..."
+                placeholderTextColor="#fff"
+                style={styles.input}
+                onChangeText={setUsername}
+              />
+            </View>
 
-          <TouchableOpacity
-            style={styles.buttonLogin}
-            onPress={() => handleLogin()}
-          >
-            <Text style={styles.buttonText}>LOGIN</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+            <View style={styles.inputWrapper}>
+              <Ionicons name="lock-closed-outline" size={20} color="#fff" style={styles.icon} />
+              <TextInput
+                placeholder="Password..."
+                placeholderTextColor="#fff"
+                style={styles.input}
+                secureTextEntry
+                onChangeText={setPassword}
+              />
 
-      <TouchableOpacity
-        style={styles.floatingSignUp}
-        onPress={() => goToSignup()}
-      >
-        <Text style={styles.buttonText}>Sign up 💕</Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
+
+            </View>
+
+            <TouchableOpacity
+              style={styles.forgotPassword}
+              onPress={() => console.log("Forgot Password pressed")}
+            >
+              <Text style={styles.forgotText}>Forgot password?</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.buttonLogin}
+              onPress={() => handleLogin()}
+            >
+              <Text style={styles.buttonText}>LOGIN</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+
+        <TouchableOpacity
+          style={styles.floatingSignUp}
+          onPress={() => goToSignup()}
+        >
+          <Text style={styles.buttonText}>Sign up 💕</Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: "#E7D8C9",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
