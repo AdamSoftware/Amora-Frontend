@@ -103,20 +103,16 @@ export default function Reminders() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <LinearGradient colors={["#FDE2E2", "#F9C5C5"]} style={styles.wrapper}>
-
         <View style={styles.WelcomeContainer}>
           <TopLeft />
         </View>
-
         <View style={styles.topRightWrapper}>
           <TopRight currentPage={"Reminders"} />
         </View>
-
         <View style={styles.titleContainer}>
           <Text style={styles.appTitle}>Reminders</Text>
         </View>
         <EmptyList ListName={reminders} Name="reminder" />
-
         <FlatList
           data={reminders}
           keyExtractor={(item) => item.Id.toString()}
@@ -124,9 +120,6 @@ export default function Reminders() {
           renderItem={({ item }) => renderReminderCard(item)}
           showsVerticalScrollIndicator={false}
         />
-
-
-
         <TouchableOpacity
           style={styles.addCardFixed}
           onPress={() => console.log("Open Add Reminder form")}
