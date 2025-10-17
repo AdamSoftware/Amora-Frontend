@@ -8,27 +8,23 @@ import {
   ActivityIndicator,
   Dimensions,
 } from "react-native";
-import { useFonts, DancingScript_700Bold } from "@expo-google-fonts/dancing-script";
-import { Poppins_400Regular, Poppins_600SemiBold } from "@expo-google-fonts/poppins";
-import AppLoading from "expo-app-loading";
 import TopLeft from "../components/TopLeft";
 import TopRight from "../components/TopRight";
-import GenericAPIHelper from "../helper/GenericAPIHelper";
+//import GenericAPIHelper from "../helper/GenericAPIHelper";
 import UserHelper from "../helper/user";
 import { Swipeable } from "react-native-gesture-handler";
 import { scaleFont } from "../helper/FontHelpers.js";
 import { LinearGradient } from "expo-linear-gradient";
 import { fetchEvents } from "../helper/FetchReminders";
 import EmptyList from "../components/EmptyList";
+import HandleAPIRequest from "../components/HandleAPIRequest";
+import FontLoading from "../components/FontLoading";
+import NofiyMessage from "../helper/NotifyMessages";
 
-const { width, height } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
 export default function Events() {
-  const [fontsLoaded] = useFonts({
-    DancingScript_700Bold,
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-  });
+  const fontsLoading = FontLoading();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,21 +33,24 @@ export default function Events() {
       const mapped = await fetchEvents(UserHelper.id);
       setEvents(mapped);
       setLoading(false);
+      NofiyMessage.notifyInfo("Events loaded");
     }
     loadEvents();
   }, []);
-
-  if (!fontsLoaded) return <AppLoading />;
-  if (loading)
-    return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: "center" }} />;
-
   const renderRightActions = (id: string) => (
     <View style={styles.swipeActionsContainer}>
       <TouchableOpacity
         style={styles.deleteButton}
         onPress={() => {
-          setEvents((prev) => prev.filter((e) => e.id !== id));
-          GenericAPIHelper.GenericAPIDelete(`/events/${id}`);
+          HandleAPIRequest.HandleDeleteRequest(
+            "events",
+            id,
+            (data) => {
+              setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
+              NofiyMessage.notifySuccess("Event deleted successfully");
+            },
+            (error) => console.error("Delete request failed:", error)
+          );
         }}
       >
         <Text style={styles.deleteText}>Delete</Text>
@@ -92,6 +91,11 @@ export default function Events() {
       </TouchableOpacity>
     </Swipeable>
   );
+
+  if (fontsLoading) 
+    return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: "center" }} />;
+  if (loading)
+    return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: "center" }} />;
 
   return (
     <LinearGradient colors={["#FDE2E2", "#F9C5C5"]} style={styles.wrapper}>

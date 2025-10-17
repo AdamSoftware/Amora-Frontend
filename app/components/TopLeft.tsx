@@ -6,6 +6,9 @@ import { Poppins_400Regular } from "@expo-google-fonts/poppins";
 import AppLoading from "expo-app-loading";
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import NotifyMessages from "../helper/NotifyMessages.js";
+
 
 const { width } = Dimensions.get("window");
 
@@ -17,6 +20,7 @@ const scaleFont = (size) => {
 
 export default function TopLeft() {
   const [welcome, setWelcome] = useState("");
+  const router = useRouter();
 
   const [fontsLoaded] = useFonts({
     DancingScript_700Bold,
@@ -37,7 +41,7 @@ export default function TopLeft() {
     <View style={styles.WelcomeContainer}>
       <TouchableOpacity
         onPress={() => {
-          console.log("Profile icon pressed");
+          router.push("/pages/User");
         }}
         style={styles.profileIcon}
       >

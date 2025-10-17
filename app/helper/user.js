@@ -23,7 +23,7 @@ const UserLoginHelper = {
       
 
       if (response && response.token) {
-        UserHelper.email = username;
+        UserHelper.email = response.user.email;
         UserHelper.token = response.token;
         UserHelper.firstname = response.user.firstname;
         UserHelper.lastname = response.user.lastname;
@@ -35,7 +35,7 @@ const UserLoginHelper = {
         router.push('/pages/Events');
 
         console.log(UserHelper.email);
-        console.log(UserHelper.token);
+        console.log("Token: ",  UserHelper.token);
         console.log(UserHelper.firstname);
         console.log(UserHelper.lastname);
         console.log(UserHelper.phonenumber);

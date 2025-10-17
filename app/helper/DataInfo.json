@@ -1,0 +1,28 @@
+{
+  "AppInfo": 
+  [
+    {
+      "AppID": "com.example.myapp",
+      "Version": "1.0.0",
+      "BuildNumber": "100",
+      "Name": "Amora",
+      "Description": "This app is a social platform designed to connect people and foster community engagement. and to help people in relationships to find the perfect gift for their loved ones.",
+      "Author": "Amora Team",
+      "License": "MIT"
+    }
+  ],
+  "PrivacyPolicy":
+  [
+    { 
+      "FirstPartyDataCollection": "We collect personal information such as name, email address, and usage data to provide and improve our services.",
+      "ThirdPartyDataCollection": "We may share your data with third-party service providers for analytics and advertising purposes.",
+      "DataUsage": "Your data is used to personalize your experience, improve our services, and communicate with you.",
+      "DataProtection": "We implement security measures to protect your data from unauthorized access.",
+      "UserRights": "You have the right to access, correct, or delete your personal data.",
+      "ContactInformation": "For any privacy-related inquiries, please contact us at Amora.com/support or call us at +1-800-123-4567.",
+      "PolicyUpdates": "We may update this policy periodically. Changes will be posted on this page with an updated date.",
+      "LastUpdated": "2024-06-01"
+    }
+  ]
+
+}

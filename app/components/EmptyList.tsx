@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useFonts, DancingScript_700Bold } from "@expo-google-fonts/dancing-script";
 import { Poppins_400Regular, Poppins_600SemiBold } from "@expo-google-fonts/poppins";
@@ -39,7 +38,8 @@ const styles = StyleSheet.create({
    fontFamily: "Poppins_400Regular", 
    alignItems: "center", 
    justifyContent: "center", 
-   textAlign: "center"
+   textAlign: "center",
+   padding: 5,
   }
 });
 

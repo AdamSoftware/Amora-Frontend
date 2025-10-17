@@ -1,15 +1,18 @@
 import Constants from 'expo-constants';
-import UserHelper from './user';
+import UserHelper,{ UserLogoutHelper } from './user';
+
 
 const BaseURL = Constants.expoConfig.extra.apiBaseUrl;
-console.log("BaseURL is:", BaseURL);
+//console.log("BaseURL is:", BaseURL);
 
 
 const GenericAPIHelper = {
   async GenericAPIGet(endpoint) {
     try {
+      //console.log("TOKEN: ", UserHelper.token);
       const token = UserHelper.token;
-      console.log("Route", `${BaseURL}${endpoint}`);
+      //console.log("Token", token);
+      //console.log("Route", `${BaseURL}${endpoint}`);
       const response = await fetch(`${BaseURL}${endpoint}`, {
         method: 'GET',
         headers: {
@@ -20,6 +23,13 @@ const GenericAPIHelper = {
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // If the token is expired for a earlor login, then it will logout the user 
+      // and request that they login again.
+      if (response.status == 401) {
+        UserLogoutHelper.logout();
+        throw new Error('Unauthorized access, Please login again to reauthenticate yourself.');
       }
 
       const data = await response.json();
@@ -64,7 +74,7 @@ const GenericAPIHelper = {
         body: JSON.stringify(body),
       });
 
-      console.log("PUT Response:", response);
+      //console.log("PUT Response:", response);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

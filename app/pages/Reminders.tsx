@@ -6,14 +6,9 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  Dimensions,
 } from "react-native";
-import { useFonts, DancingScript_700Bold } from "@expo-google-fonts/dancing-script";
-import { Poppins_400Regular, Poppins_600SemiBold } from "@expo-google-fonts/poppins";
-import AppLoading from "expo-app-loading";
 import TopLeft from "../components/TopLeft";
 import TopRight from "../components/TopRight";
-import GenericAPIHelper from "../helper/GenericAPIHelper";
 import UserHelper from "../helper/user";
 import { Swipeable, GestureHandlerRootView } from "react-native-gesture-handler";
 import { scaleFont } from "../helper/FontHelpers.js";
@@ -21,17 +16,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import formateTime from "../helper/formateTime";
 import { fetchRemindersWithTitles } from "../helper/FetchReminders";
 import  EmptyList  from "../components/EmptyList";
+import FontLoading from "../components/FontLoading";
+import HandleAPIRequest from "../components/HandleAPIRequest";
 
 
 export default function Reminders() {
-  const [fontsLoaded] = useFonts({
-    DancingScript_700Bold,
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-  });
   const [reminders, setReminders] = useState<any[]>([]);
   const [reservations, setReservations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const fontsLoading = FontLoading();
+
 
   useEffect(() => {
     async function loadReminders() {
@@ -44,18 +38,16 @@ export default function Reminders() {
     loadReminders();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    try {
-      await GenericAPIHelper.GenericAPIDelete(`/reminders/${id}`);
-      setReminders(prev => prev.filter(r => r.Id.toString() !== id));
-    } catch (err) {
-      console.error("API DELETE request failed:", err);
-    }
-  };
+
 
   const renderRightActions = (id: string) => (
     <View style={styles.swipeActionsContainer}>
-      <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(id)}>
+      <TouchableOpacity style={styles.deleteButton} onPress={() => HandleAPIRequest.HandleDeleteRequest(
+          "reminders",
+          id,
+          setReminders,
+          (error) => console.error("Delete request failed:", error)
+        )}>
         <Text style={styles.deleteText}>Delete</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.editButton} onPress={() => console.log("Edit reminder", id)}>
@@ -97,7 +89,7 @@ export default function Reminders() {
     </Swipeable>
   );
 
-  if (!fontsLoaded) return <AppLoading />;
+  if (fontsLoading) return <ActivityIndicator size="large" style={{ flex: 1 }} />;
   if (loading) return <ActivityIndicator size="large" style={{ flex: 1 }} />;
 
   return (
@@ -115,7 +107,7 @@ export default function Reminders() {
         <EmptyList ListName={reminders} Name="reminder" />
         <FlatList
           data={reminders}
-          keyExtractor={(item) => item.Id.toString()}
+          keyExtractor={(item) => item.id}
           contentContainerStyle={styles.cardsWrapper}
           renderItem={({ item }) => renderReminderCard(item)}
           showsVerticalScrollIndicator={false}
