@@ -20,6 +20,7 @@ import EmptyList from "../components/EmptyList";
 import HandleAPIRequest from "../components/HandleAPIRequest";
 import FontLoading from "../components/FontLoading";
 import NofiyMessage from "../helper/NotifyMessages";
+import {router} from "expo-router";
 
 const { height } = Dimensions.get("window");
 
@@ -57,7 +58,13 @@ export default function Events() {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.editButton}
-        onPress={() => console.log("Edit event:", id)}
+        onPress={() => {
+         console.log("Edit event:", id);
+         router.push({
+            pathname: '/components/Edit',
+            params: { ComingFrom: 'events', Id: id },
+         });
+        }}
       >
         <Text style={styles.editText}>Edit</Text>
       </TouchableOpacity>

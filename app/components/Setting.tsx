@@ -9,6 +9,9 @@ export default function Setting() {
   // const setNotifications = AsyncStorage.setItem("@notifications", JSON.stringify(true));
   const router = useRouter();
   
+  // TODO:: Have to actually make darkmode do something in the app
+  // TODO:: Have to make notifications on the app work and then I can link them to the settings
+  // to turn on and off notifs
 
   const [preferences, setPreferences] = useState({
     darkMode: AsyncStorage.getItem("@darkMode"),
@@ -42,6 +45,7 @@ export default function Setting() {
         // console.log("DarkMode after setting:", preferences.darkMode);
         // console.log("Notifications after setting:", preferences.notifications);
       } catch (error) {
+        console.log("Preferences not set, using defaults.");
         console.log("Failed to load preferences:", error);
       }
     };

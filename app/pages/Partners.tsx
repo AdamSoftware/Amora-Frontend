@@ -17,6 +17,7 @@ import UserHelper from "../helper/user";
 import { Swipeable } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import {fetchPartners} from "../helper/FetchReminders";
+import { router } from "expo-router";
 
 
 
@@ -62,7 +63,13 @@ export default function Partners() {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.editButton}
-        onPress={() => handleEdit(partner)}
+        onPress={() => {
+         console.log("reminders:", partner.id);
+         router.push({
+            pathname: '/components/Edit',
+            params: { ComingFrom: 'partners', Id: partner.id },
+         });
+        }}
       >
         <Text style={styles.editText}>Edit</Text>
       </TouchableOpacity>

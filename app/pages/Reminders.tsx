@@ -18,6 +18,7 @@ import { fetchRemindersWithTitles } from "../helper/FetchReminders";
 import  EmptyList  from "../components/EmptyList";
 import FontLoading from "../components/FontLoading";
 import HandleAPIRequest from "../components/HandleAPIRequest";
+import { router } from "expo-router";
 
 
 export default function Reminders() {
@@ -50,7 +51,16 @@ export default function Reminders() {
         )}>
         <Text style={styles.deleteText}>Delete</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.editButton} onPress={() => console.log("Edit reminder", id)}>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => {
+         console.log("Reminder:", id);
+         router.push({
+            pathname: '/components/Edit',
+            params: { ComingFrom: 'reminders', Id: id },
+         });
+        }}
+      >
         <Text style={styles.editText}>Edit</Text>
       </TouchableOpacity>
     </View>
