@@ -14,7 +14,9 @@ export default function ReminderEdit(Data: any) {
       <View style={styles.BackBtn}>
         <BackBtn />
       </View>
-      <Text>Edit reminder Screen for ID: {data?.Id}</Text>
+      <View>
+        <Text>Edit Reminder Screen for ID: {data?.Id}</Text>
+      </View>
     </View>
   )
 }

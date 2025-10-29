@@ -9,7 +9,7 @@ export default function BackBtn() {
 
   return (
     <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-      <Ionicons name="arrow-back" size={scaleFont(24)} color="black" />
+      <Ionicons name="arrow-back" size={scaleFont(24)} color="#d64b72" />
       <Text style={styles.backText}>Back</Text>
     </TouchableOpacity>
   );
@@ -18,10 +18,13 @@ export default function BackBtn() {
 const styles = StyleSheet.create({
   backButton: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   backText: {
-    color: 'black',
+    color: '#d64b72',
     fontSize: scaleFont(18),
     marginLeft: 5,
+    fontWeight: '500',
   },
 });
+

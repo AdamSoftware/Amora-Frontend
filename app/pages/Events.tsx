@@ -75,7 +75,13 @@ export default function Events() {
     <Swipeable renderRightActions={() => renderRightActions(item.id)}>
       <TouchableOpacity
         style={styles.card}
-        onPress={() => console.log("Open Event:", item.title)}
+        onPress={() => {
+         console.log("Edit event:", item.id);
+         router.push({
+            pathname: '/components/Edit',
+            params: { ComingFrom: 'events', Id: item.id },
+         });
+        }}
         activeOpacity={0.8}
       >
         <Text style={styles.cardTitle}>{item.title}</Text>

@@ -24,6 +24,7 @@ export default function Edit() {
         String(Id),
         (data) => {
           setData(data);
+          console.log("Data loaded:", data);
           setLoading(false);
           NotifyMessages.notifySuccess("Data loaded successfully!");
         },
@@ -48,17 +49,17 @@ export default function Edit() {
   // TODO:: Reder a edit screen based on where you are coming from each one will look a little different
   return (
     ComingFrom === 'events' ? (
-      <View style={styles.container}>
+      <LinearGradient colors={["#FDE2E2", "#F9C5C5"]} style={styles.container}>
         <EventEdit data={data} />
-      </View>
+      </LinearGradient>
     ) : ComingFrom === 'reminders' ? (
-      <View style={styles.container}>
+      <LinearGradient colors={["#FDE2E2", "#F9C5C5"]} style={styles.container}>
         <ReminderEdit data={data} />
-      </View>
+      </LinearGradient>
     ) : (
-      <View style={styles.container}>
+      <LinearGradient colors={["#FDE2E2", "#F9C5C5"]} style={styles.container}>
         <PartnerEdit data={data} />
-      </View>
+      </LinearGradient>
     )
   );
 } 

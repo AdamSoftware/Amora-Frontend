@@ -64,7 +64,7 @@ export async function fetchEvents(UserId: any) {
       title: e.Name || "No title set",
       description: e.Description || "No description set",
       isActive: e.IsActive ? "Active" : "Inactive",
-      date: formatDate(e.DateOfEvent),
+      date: formatDate(e.DateOfTheEvent),
     };
   });
   return mapped;

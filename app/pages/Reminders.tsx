@@ -70,7 +70,14 @@ export default function Reminders() {
     <Swipeable renderRightActions={() => renderRightActions(item.Id.toString())}>
 
  
-      <TouchableOpacity style={styles.card} activeOpacity={0.8}>
+      <TouchableOpacity style={styles.card} activeOpacity={0.8}         onPress={() => {
+         console.log("Reminder:", item.Id);
+         router.push({
+            pathname: '/components/Edit',
+            params: { ComingFrom: 'reminders', Id: item.Id },
+         });
+        }}
+      >
         <Text style={styles.cardTitle}>{item.title}</Text>
         <Text style={styles.cardTitle}>{item.EventTitle}</Text>
         <Text style={styles.cardDescription}>
