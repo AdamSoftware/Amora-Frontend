@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import TopLeft from "../components/TopLeft";
 import TopRight from "../components/TopRight";
-//import GenericAPIHelper from "../helper/GenericAPIHelper";
 import UserHelper from "../helper/user";
 import { Swipeable } from "react-native-gesture-handler";
 import { scaleFont } from "../helper/FontHelpers.js";
@@ -21,6 +20,8 @@ import HandleAPIRequest from "../components/HandleAPIRequest";
 import FontLoading from "../components/FontLoading";
 import NofiyMessage from "../helper/NotifyMessages";
 import {router} from "expo-router";
+import { useFocusEffect } from "expo-router";
+import {useCallback} from "react";
 
 const { height } = Dimensions.get("window");
 
@@ -28,16 +29,33 @@ export default function Events() {
   const fontsLoading = FontLoading();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  // TODO:: need to add a filiter for date and for active and inactive
+  // TODO:: add a search bar for searching for the name of the event
+  // INFO:: for the search bar i want to guess search so that as you type it will load the results for example but a s and spring and summer will start to show then you put su and just summer will appear
 
-  useEffect(() => {
-    async function loadEvents() {
-      const mapped = await fetchEvents(UserHelper.id);
-      setEvents(mapped);
-      setLoading(false);
-      NofiyMessage.notifyInfo("Events loaded");
-    }
-    loadEvents();
-  }, []);
+
+  // INFO:: going to drop this for now focus should mount on the initial load
+  // useEffect(() => {
+  //   async function loadEvents() {
+  //     setLoading(true);
+  //     fetchData().then(() => setLoading(false));
+  //   }
+  //   loadEvents();
+  // }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      async function loadEvents() {
+        setLoading(true);
+        const mapped = await fetchEvents(UserHelper.id);
+        setEvents(mapped);
+        setLoading(false);
+      }
+      loadEvents();
+    }, [])
+  );
+
+
   const renderRightActions = (id: string) => (
     <View style={styles.swipeActionsContainer}>
       <TouchableOpacity

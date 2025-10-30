@@ -34,7 +34,7 @@ export default function DateField({
   };
 
   return (
-    <View style={{ marginBottom: 15 }}>
+    <View style={{ marginBottom: 15,}}>
       <Text
         style={{
           fontSize: scaleFont(14),

@@ -49,5 +49,6 @@ const fieldStyles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 8,
+    width: '100%',
   },
 });

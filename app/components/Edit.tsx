@@ -9,7 +9,6 @@ import ReminderEdit from './ReminderEdit';
 import PartnerEdit from './PartnerEdit';
 
 export default function Edit() {
-  // TODO:: this will take in the current place you are coming from
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +45,7 @@ export default function Edit() {
     );
   }
 
-  // TODO:: Reder a edit screen based on where you are coming from each one will look a little different
+  // INFO:: will render the edit screen based on where you are coming from
   return (
     ComingFrom === 'events' ? (
       <LinearGradient colors={["#FDE2E2", "#F9C5C5"]} style={styles.container}>

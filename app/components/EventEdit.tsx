@@ -7,6 +7,7 @@ import { scaleFont } from '../helper/FontHelpers';
 import TopViewEdit from '../components/TopViewEdit';
 import EditableField from './EditableFields';
 import DateChangeFields from './DateChangeFields';
+import AttachedEventItems from './AttachedEventItems';
 
 export default function EventEdit(Data: any) {
   const [data, setData] = useState<any>(Data.data);
@@ -36,16 +37,11 @@ export default function EventEdit(Data: any) {
   return (
     <SafeAreaView style={[styles.container, { paddingTop: topPadding }]}>
       {editMode && (
-        <TopViewEdit
-          activeTab={activeTab}
-          onSelect={(tab) => setActiveTab(tab)}
-          EditMode={editMode}
-        />
+        <TopViewEdit activeTab={activeTab} onSelect={(tab) => setActiveTab(tab)} EditMode={editMode} />
       )}
 
       <View style={[styles.headerRow, !editMode && { marginTop: 10 }]}>
         <BackBtn />
-
         <View style={styles.switchedit}>
           <Text style={styles.switchLabel}>Editing</Text>
           <View style={[styles.toggleContainer, editMode && styles.toggleActive]}>
@@ -64,42 +60,41 @@ export default function EventEdit(Data: any) {
         </View>
       </View>
 
-      {/* Editable Fields Section */}
-      <ScrollView contentContainerStyle={{ paddingBottom: 40, marginTop: 10 }}>
-        <EditableField
-          label="Event Name"
-          value={EditedData.Name}
-          editMode={editMode}
-          onChangeText={(text) => setEditedData({ ...EditedData, Name: text })}
-        />
-
-        <EditableField
-          label="Description"
-          value={EditedData.Description}
-          editMode={editMode}
-          onChangeText={(text) => setEditedData({ ...EditedData, Description: text })}
-        />
-
-        <DateChangeFields
-          label="Date of the Event"
-          value={EditedData.DateOfTheEvent}
-          editMode={editMode}
-          onChange={(date) =>
-            setEditedData({ ...EditedData, DateOfTheEvent: date.toISOString() })
-          }
-        />
-
-        <View style={{ marginBottom: 15 }}>
-          <Text style={{ fontSize: scaleFont(14), fontWeight: '500', color: '#555', marginBottom: 5 }}>
-            Active
-          </Text>
-          <Switch
-            value={EditedData.IsActive}
-            disabled={!editMode}
-            onValueChange={(value) => setEditedData({ ...EditedData, IsActive: value })}
-            trackColor={{ false: 'rgba(200,200,200,0.4)', true: 'rgba(255,111,97,0.3)' }}
-            thumbColor="#fff"
+      <ScrollView contentContainerStyle={{ paddingBottom: 40, marginTop: 10, flexGrow: 1 }}>
+        {/* Event Info Panel */}
+        <View style={styles.eventPanel}>
+          <EditableField
+            label="Event Name"
+            value={EditedData.Name}
+            editMode={editMode}
+            onChangeText={(text) => setEditedData({ ...EditedData, Name: text })}
           />
+          <EditableField
+            label="Description"
+            value={EditedData.Description}
+            editMode={editMode}
+            onChangeText={(text) => setEditedData({ ...EditedData, Description: text })}
+          />
+          <DateChangeFields
+            label="Date of the Event"
+            value={EditedData.DateOfTheEvent}
+            editMode={editMode}
+            onChange={(date) => setEditedData({ ...EditedData, DateOfTheEvent: date.toISOString() })}
+          />
+          <View style={styles.activeRow}>
+            <Switch
+              value={EditedData.IsActive}
+              disabled={!editMode}
+              onValueChange={(value) => setEditedData({ ...EditedData, IsActive: value })}
+              trackColor={{ false: 'rgba(200,200,200,0.4)', true: 'rgba(255,111,97,0.3)' }}
+              thumbColor="#fff"
+            />
+          </View>
+        </View>
+
+        {/* Attached Gifts/Reservations Section */}
+        <View style={styles.AttachedSection}>
+          <AttachedEventItems eventId={data.Id} />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -110,26 +105,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: 20,
   },
-
   switchedit: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   switchLabel: {
     fontSize: scaleFont(16),
     fontWeight: '600',
     color: '#d64b72',
     marginRight: 12,
   },
-
   toggleContainer: {
     borderRadius: 15,
     backgroundColor: 'rgba(200,200,200,0.3)',
@@ -140,6 +131,32 @@ const styles = StyleSheet.create({
   },
   toggleSwitch: {
     transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
+  },
+  eventPanel: {
+    alignSelf: 'center',
+    backgroundColor: '#fffdf8', 
+    borderRadius: 29,
+    padding: 13,
+    borderWidth: 1,
+    borderColor: '#ffd1cc',
+    shadowColor: '(rgb(255, 0, 128))',
+    //shadowColor: 'rgb(255, 111, 97)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.9,
+    shadowRadius: 5,
+    elevation: 3,
+    width: '95%',
+  },
+  activeRow: {
+    marginTop: 15,
+  },
+  activeLabel: {
+    fontSize: scaleFont(15),
+    fontWeight: '500',
+    color: '#555',
+  },
+  AttachedSection: {
+    flex: 1,
   },
 });
 
