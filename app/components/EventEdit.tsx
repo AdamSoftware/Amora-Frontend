@@ -40,6 +40,7 @@ export default function EventEdit(Data: any) {
         <TopViewEdit activeTab={activeTab} onSelect={(tab) => setActiveTab(tab)} EditMode={editMode} />
       )}
 
+
       <View style={[styles.headerRow, !editMode && { marginTop: 10 }]}>
         <BackBtn />
         <View style={styles.switchedit}>
@@ -60,43 +61,44 @@ export default function EventEdit(Data: any) {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 40, marginTop: 10, flexGrow: 1 }}>
-        {/* Event Info Panel */}
-        <View style={styles.eventPanel}>
-          <EditableField
-            label="Event Name"
-            value={EditedData.Name}
-            editMode={editMode}
-            onChangeText={(text) => setEditedData({ ...EditedData, Name: text })}
-          />
-          <EditableField
-            label="Description"
-            value={EditedData.Description}
-            editMode={editMode}
-            onChangeText={(text) => setEditedData({ ...EditedData, Description: text })}
-          />
-          <DateChangeFields
-            label="Date of the Event"
-            value={EditedData.DateOfTheEvent}
-            editMode={editMode}
-            onChange={(date) => setEditedData({ ...EditedData, DateOfTheEvent: date.toISOString() })}
-          />
-          <View style={styles.activeRow}>
-            <Switch
-              value={EditedData.IsActive}
-              disabled={!editMode}
-              onValueChange={(value) => setEditedData({ ...EditedData, IsActive: value })}
-              trackColor={{ false: 'rgba(200,200,200,0.4)', true: 'rgba(255,111,97,0.3)' }}
-              thumbColor="#fff"
-            />
-          </View>
-        </View>
+      {activeTab === 'Events' && (
 
-        {/* Attached Gifts/Reservations Section */}
-        <View style={styles.AttachedSection}>
-          <AttachedEventItems eventId={data.Id} />
-        </View>
-      </ScrollView>
+        <ScrollView contentContainerStyle={{ paddingBottom: 40, marginTop: 10, flexGrow: 1 }}>
+          <View style={styles.eventPanel}>
+            <EditableField
+              label="Event Name"
+              value={EditedData.Name}
+              editMode={editMode}
+              onChangeText={(text) => setEditedData({ ...EditedData, Name: text })}
+            />
+            <EditableField
+              label="Description"
+              value={EditedData.Description}
+              editMode={editMode}
+              onChangeText={(text) => setEditedData({ ...EditedData, Description: text })}
+            />
+            <DateChangeFields
+              label="Date of the Event"
+              value={EditedData.DateOfTheEvent}
+              editMode={editMode}
+              onChange={(date) => setEditedData({ ...EditedData, DateOfTheEvent: date.toISOString() })}
+            />
+            <View style={styles.activeRow}>
+              <Switch
+                value={EditedData.IsActive}
+                disabled={!editMode}
+                onValueChange={(value) => setEditedData({ ...EditedData, IsActive: value })}
+                trackColor={{ false: 'rgba(200,200,200,0.4)', true: 'rgba(255,111,97,0.3)' }}
+                thumbColor="#fff"
+              />
+            </View>
+          </View>
+
+          <View style={styles.AttachedSection}>
+            <AttachedEventItems eventId={data.Id} />
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }

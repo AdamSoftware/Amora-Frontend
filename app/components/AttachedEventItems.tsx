@@ -136,7 +136,8 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
     borderLeftWidth: 6,
-    borderLeftColor: "#007AFF", // accent color on the left
+    //borderLeftColor: "#007AFF",
+    borderLeftColor: '(rgb(255, 0, 128))',
   },
   cardTitle: {
     fontSize: scaleFont(20),
